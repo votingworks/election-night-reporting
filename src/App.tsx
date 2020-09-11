@@ -56,6 +56,7 @@ const LocalityName = styled.strong`
 
 interface LocalitySummaryProps {
   percent: number
+  hue: number
 }
 const LocalitySummary = styled.div<LocalitySummaryProps>`
   position: relative;
@@ -69,16 +70,18 @@ const LocalitySummary = styled.div<LocalitySummaryProps>`
     padding: 0.1rem;
     content: attr(data-percent-label);
     font-size: 0.6rem;
+    font-weight: 600;
   }
   &::after {
     display: block;
     overflow: hidden;
     width: ${({ percent }) => `${percent * 100}%`};
     padding: 0.1rem;
-    background: #a039a8;
+    background: hsl(${({ hue }) => hue} 49% 44% / 1);
     color: #ffffff;
     content: attr(data-percent-label);
     font-size: 0.6rem;
+    font-weight: 600;
     text-align: right;
   }
   p {
@@ -137,6 +140,7 @@ const App: React.FunctionComponent = () => {
           {localities.map((locality) => (
             <LocalitySummary
               key={locality.id}
+              hue={Math.floor(Math.random() * 360) + 1}
               percent={locality.ballotsCounted / locality.ballotsExpected}
               data-percent-label={`${(
                 (locality.ballotsCounted / locality.ballotsExpected) *
