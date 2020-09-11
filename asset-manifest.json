@@ -1,23 +1,22 @@
 {
   "files": {
-    "main.css": "/election-night-reporting/static/css/main.5f361e03.chunk.css",
-    "main.js": "/election-night-reporting/static/js/main.68db9f72.chunk.js",
-    "main.js.map": "/election-night-reporting/static/js/main.68db9f72.chunk.js.map",
+    "main.css": "/election-night-reporting/static/css/main.09bd3caa.chunk.css",
+    "main.js": "/election-night-reporting/static/js/main.0846a81a.chunk.js",
+    "main.js.map": "/election-night-reporting/static/js/main.0846a81a.chunk.js.map",
     "runtime-main.js": "/election-night-reporting/static/js/runtime-main.312e0acf.js",
     "runtime-main.js.map": "/election-night-reporting/static/js/runtime-main.312e0acf.js.map",
-    "static/js/2.68c02958.chunk.js": "/election-night-reporting/static/js/2.68c02958.chunk.js",
-    "static/js/2.68c02958.chunk.js.map": "/election-night-reporting/static/js/2.68c02958.chunk.js.map",
+    "static/js/2.83bc6f26.chunk.js": "/election-night-reporting/static/js/2.83bc6f26.chunk.js",
+    "static/js/2.83bc6f26.chunk.js.map": "/election-night-reporting/static/js/2.83bc6f26.chunk.js.map",
     "index.html": "/election-night-reporting/index.html",
-    "precache-manifest.6bb8b1f33772148ec2b3c3ef5253c15b.js": "/election-night-reporting/precache-manifest.6bb8b1f33772148ec2b3c3ef5253c15b.js",
+    "precache-manifest.5149ad84f81b21cdb7135fb35f0cae7c.js": "/election-night-reporting/precache-manifest.5149ad84f81b21cdb7135fb35f0cae7c.js",
     "service-worker.js": "/election-night-reporting/service-worker.js",
-    "static/css/main.5f361e03.chunk.css.map": "/election-night-reporting/static/css/main.5f361e03.chunk.css.map",
-    "static/js/2.68c02958.chunk.js.LICENSE.txt": "/election-night-reporting/static/js/2.68c02958.chunk.js.LICENSE.txt",
-    "static/media/logo.svg": "/election-night-reporting/static/media/logo.5d5d9eef.svg"
+    "static/css/main.09bd3caa.chunk.css.map": "/election-night-reporting/static/css/main.09bd3caa.chunk.css.map",
+    "static/js/2.83bc6f26.chunk.js.LICENSE.txt": "/election-night-reporting/static/js/2.83bc6f26.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.312e0acf.js",
-    "static/js/2.68c02958.chunk.js",
-    "static/css/main.5f361e03.chunk.css",
-    "static/js/main.68db9f72.chunk.js"
+    "static/js/2.83bc6f26.chunk.js",
+    "static/css/main.09bd3caa.chunk.css",
+    "static/js/main.0846a81a.chunk.js"
   ]
 }
