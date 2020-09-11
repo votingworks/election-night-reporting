@@ -1,4 +1,9 @@
 {
+  "election": {
+    "name": "General Election",
+    "date": "2020-11-03T08:00:00.000Z"
+  },
+  "lastModifiedDate": "2020-09-10T08:10:42.871Z",
   "localities": [
     {
       "id": "1",
