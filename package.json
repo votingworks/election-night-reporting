@@ -2,6 +2,7 @@
   "name": "election-night-reporting",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://votingworks.github.io/election-night-reporting",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -24,7 +25,9 @@
     "eject": "react-scripts eject",
     "format": "prettier --write src/**/*.ts{,x}",
     "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
-    "lint:css": "stylelint './src/**/*.js'"
+    "lint:css": "stylelint './src/**/*.js'",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -48,6 +51,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-jest": "^24.0.0",
     "eslint-plugin-prettier": "^3.1.4",
+    "gh-pages": "^3.1.0",
     "prettier": "^2.1.1",
     "stylelint": "^13.7.0",
     "stylelint-config-idiomatic-order": "^8.1.0",
