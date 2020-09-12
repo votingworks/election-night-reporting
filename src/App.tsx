@@ -1,166 +1,238 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import pluralize from 'pluralize'
+import { useWindowWidth } from '@react-hook/window-size'
 
 import { localeDate, localeLongDateAndTime } from './utils/IntlDateTimeFormats'
 
 import report from './data/virgina-report.json'
+import { Dictionary } from './types'
+import shuffle from './utils/shuffle'
 
 pluralize.addSingularRule('localities', 'locality')
 
-const Screen = styled.div`
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-`
+const Screen = styled.div``
 const Nav = styled.nav`
-  padding: 1rem;
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  right: 0;
+  left: 0;
+  padding: 0.5rem;
   background: #3e4e6d;
   color: #ffffff;
+  @media (min-width: 767px) {
+    padding: 1rem;
+  }
 `
-const Main = styled.main`
-  display: flex;
-  overflow: auto;
-  flex-direction: column;
+const Main = styled.main<{ navigationHeight: number }>`
+  padding-top: ${({ navigationHeight }) =>
+    navigationHeight ? `${navigationHeight}px` : '150px'};
 `
-const MainChild = styled.div`
-  margin: 1rem;
-`
-
 const Masthead = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
+  @media (min-width: 767px) {
+    flex-direction: row;
+  }
 `
 const Title = styled.h1`
+  flex: 1;
   margin: 0;
 `
 const LastUpdated = styled.div`
+  margin-top: 0.25em;
   font-size: 0.8rem;
-`
-const Search = styled.input`
-  width: 15rem;
-  padding: 0.25rem;
+  @media (min-width: 767px) {
+    margin-top: 0;
+  }
 `
 const SearchBar = styled.label`
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
+  flex-direction: column;
   justify-content: space-between;
+  @media (min-width: 767px) {
+    flex-direction: row;
+    align-items: center;
+  }
+`
+const SearchSummary = styled.div`
+  flex: 1;
+  margin: 0.5em 0;
+  @media (min-width: 767px) {
+    margin: 0 1em 0 0;
+  }
+`
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 0.25rem;
+  @media (min-width: 767px) {
+    width: 15em;
+  }
 `
 
 const LocalityName = styled.strong`
-  font-size: 1.2rem;
+  font-size: 1.3rem;
 `
 
-interface LocalitySummaryProps {
-  percent: number
-  hue: number
-}
-const LocalitySummary = styled.div<LocalitySummaryProps>`
+const LocalitySummary = styled.div<{ isTotal: boolean }>`
+  padding: ${({ isTotal }) => (isTotal ? '2rem 0.5rem' : '0.75rem 0.5rem')};
+  border-bottom: ${({ isTotal }) =>
+    isTotal ? '1px solid #cccccc' : undefined};
+  margin-bottom: ${({ isTotal }) => (isTotal ? '0.5rem' : undefined)};
+  background: ${({ isTotal }) => (isTotal ? '#eeeeee' : undefined)};
+  @media (min-width: 767px) {
+    padding: ${({ isTotal }) => (isTotal ? '2rem 1rem' : '1rem')};
+  }
+
+  p {
+    margin: 0 0 0.2rem;
+  }
+`
+const CompletedBar = styled.div`
   position: relative;
-  margin-bottom: 1.5rem;
-  &::before {
+  font-size: 0.8rem;
+  font-weight: 600;
+  div {
+    padding: 0 0.3rem;
+    border-radius: 2rem;
+    line-height: 1.4em;
+  }
+  div:first-child {
+    background: #dddddd;
+  }
+  div:last-child {
     position: absolute;
-    z-index: -1;
+    z-index: 1;
+    right: 0;
     bottom: 0;
     left: 0;
-    display: block;
-    padding: 0.1rem;
-    content: attr(data-percent-label);
-    font-size: 0.6rem;
-    font-weight: 600;
-  }
-  &::after {
-    display: block;
     overflow: hidden;
-    width: ${({ percent }) => `${percent * 100}%`};
-    padding: 0.1rem;
-    background: hsl(${({ hue }) => hue} 49% 44% / 1);
+    background: #000000;
     color: #ffffff;
-    content: attr(data-percent-label);
-    font-size: 0.6rem;
-    font-weight: 600;
     text-align: right;
   }
-  p {
-    margin: 0 0 0.1rem;
-  }
 `
+// TODO: Move color generation into report json so that localities maintain the same color.
+const randomHues = shuffle(
+  report.localities.map((_, i, array) => 360 * ((i + 1) / array.length))
+)
+const localityColors = report.localities.reduce<Dictionary<string>>(
+  (result, locality, i) => ({
+    ...result,
+    [locality.id]: `hsl(${randomHues[i]} 40% 40% / 1)`,
+  }),
+  {}
+)
+
+interface Locality {
+  id: string
+  name: string
+  ballotsCounted: number
+  ballotsExpected: number
+}
 
 const App: React.FunctionComponent = () => {
-  const [localities, setLocalities] = useState(report.localities)
+  const windowWidth = useWindowWidth()
+  const [navigationHeight, setNavigationHeight] = useState<number>(0)
   const [filter, setFilter] = useState('')
-  const filterLocalities = (event: React.FormEvent<HTMLInputElement>) => {
-    const { value } = event.currentTarget
-    const newLocalities = report.localities.filter((l) =>
-      l.name.match(new RegExp(value, 'gi'))
-    )
-    setFilter(value)
-    setLocalities(newLocalities)
-  }
-  const clearFilter = () => {
-    setFilter('')
-    setLocalities(report.localities)
-  }
-  const electionDate = localeDate.format(new Date(report.election.date))
-  const lastUpdated = localeLongDateAndTime.format(
-    new Date(report.lastModifiedDate)
+  const reportTotal = report.localities.reduce<Locality>(
+    (result, locality) => ({
+      ...result,
+      ballotsCounted: result.ballotsCounted + locality.ballotsCounted,
+      ballotsExpected: result.ballotsExpected + locality.ballotsExpected,
+    }),
+    {
+      id: 'total',
+      name: 'State of Virginia',
+      ballotsCounted: 0,
+      ballotsExpected: 0,
+    }
   )
+  const displayLocalities = [reportTotal, ...report.localities]
+  const filteredLocalities = displayLocalities.filter((locality) =>
+    locality.name.match(new RegExp(filter, 'gi'))
+  )
+  const electionDate = localeDate.format(new Date(report.election.date))
+  const lastUpdated = localeLongDateAndTime.format(new Date(report.lastUpdated))
+
+  useEffect(() => {
+    setNavigationHeight(
+      document.getElementById('navigation')?.getBoundingClientRect().height ?? 0
+    )
+  }, [windowWidth])
 
   return (
     <Screen>
-      <Nav>
+      <Nav id="navigation">
         <Masthead>
-          <Title>Virginia Locality Reporting</Title>
+          <Title>{report.name}</Title>
           <LastUpdated>Last updated: {lastUpdated}</LastUpdated>
         </Masthead>
         <SearchBar>
           {filter ? (
-            <div>
-              Showing {pluralize('locality', localities.length, true)} matching
-              “{filter}” for {electionDate} {report.election.name}
-            </div>
+            <SearchSummary>
+              Showing {pluralize('locality', filteredLocalities.length, true)}{' '}
+              matching “{filter}” for {electionDate} {report.election.name}
+            </SearchSummary>
           ) : (
-            <div>
-              Showing all {pluralize('locality', localities.length, true)} for{' '}
+            <SearchSummary>
+              Showing all{' '}
+              {pluralize('locality', filteredLocalities.length, true)} for{' '}
               {electionDate} {report.election.name}
-            </div>
+            </SearchSummary>
           )}
-          <Search
-            type="search"
-            placeholder="search by county name"
-            onChange={filterLocalities}
+          <SearchInput
+            type="text"
+            placeholder="search by name"
+            maxLength={30}
+            onChange={(event) => setFilter(event.currentTarget.value)}
           />
         </SearchBar>
       </Nav>
-      <Main>
-        <MainChild>
-          {localities.map((locality) => (
+      <Main navigationHeight={navigationHeight}>
+        {filteredLocalities.map((locality) => {
+          const percentComplete =
+            (locality.ballotsCounted / locality.ballotsExpected) * 100
+
+          return (
             <LocalitySummary
               key={locality.id}
-              hue={Math.floor(Math.random() * 360) + 1}
-              percent={locality.ballotsCounted / locality.ballotsExpected}
-              data-percent-label={`${(
-                (locality.ballotsCounted / locality.ballotsExpected) *
-                100
-              ).toFixed(2)}%`}
+              isTotal={locality.id === 'total'}
             >
               <p>
                 <LocalityName>{locality.name}</LocalityName> has counted{' '}
                 {locality.ballotsCounted.toLocaleString('en')} of{' '}
-                {locality.ballotsExpected.toLocaleString('en')} expected
-                ballots.
+                {locality.ballotsExpected.toLocaleString('en')} expected ballots
+                {locality.id === 'total' && <strong> in total</strong>}.
               </p>
+              <CompletedBar>
+                <div>
+                  {percentComplete === 0
+                    ? '0%'
+                    : `${percentComplete.toFixed(2)}%`}
+                </div>
+                <div
+                  style={{
+                    width: `${percentComplete}%`,
+                    backgroundColor: localityColors[locality.id],
+                    visibility:
+                      locality.ballotsCounted === 0 ? 'hidden' : undefined,
+                  }}
+                >
+                  {`${percentComplete.toFixed(2)}%`}
+                </div>
+              </CompletedBar>
             </LocalitySummary>
-          ))}
-          {localities.length === 0 && (
-            <button type="button" onClick={clearFilter}>
-              Show all
-            </button>
-          )}
-        </MainChild>
+          )
+        })}
+        {filteredLocalities.length === 0 && (
+          <button type="button" onClick={() => setFilter('')}>
+            Show all
+          </button>
+        )}
       </Main>
     </Screen>
   )
