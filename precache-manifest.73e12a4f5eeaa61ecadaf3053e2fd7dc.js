@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "92ff8b2d0db446dae3a34e44f041ab2a",
+    "revision": "0b8e18cc044b76e06df18ca832f558b2",
     "url": "/election-night-reporting/index.html"
   },
   {
-    "revision": "4a81f62c90e73271984f",
+    "revision": "4f90e3b1faf03931b323",
     "url": "/election-night-reporting/static/css/main.f80ef040.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/election-night-reporting/static/js/2.1941d9d2.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "4a81f62c90e73271984f",
-    "url": "/election-night-reporting/static/js/main.32d13149.chunk.js"
+    "revision": "4f90e3b1faf03931b323",
+    "url": "/election-night-reporting/static/js/main.2799d87d.chunk.js"
   },
   {
     "revision": "3da1d498ba370f6cff33",
