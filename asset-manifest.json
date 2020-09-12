@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/election-night-reporting/static/css/main.c3fd3b39.chunk.css",
-    "main.js": "/election-night-reporting/static/js/main.20eda6ca.chunk.js",
-    "main.js.map": "/election-night-reporting/static/js/main.20eda6ca.chunk.js.map",
+    "main.css": "/election-night-reporting/static/css/main.f80ef040.chunk.css",
+    "main.js": "/election-night-reporting/static/js/main.32d13149.chunk.js",
+    "main.js.map": "/election-night-reporting/static/js/main.32d13149.chunk.js.map",
     "runtime-main.js": "/election-night-reporting/static/js/runtime-main.312e0acf.js",
     "runtime-main.js.map": "/election-night-reporting/static/js/runtime-main.312e0acf.js.map",
-    "static/js/2.89cc103b.chunk.js": "/election-night-reporting/static/js/2.89cc103b.chunk.js",
-    "static/js/2.89cc103b.chunk.js.map": "/election-night-reporting/static/js/2.89cc103b.chunk.js.map",
+    "static/js/2.1941d9d2.chunk.js": "/election-night-reporting/static/js/2.1941d9d2.chunk.js",
+    "static/js/2.1941d9d2.chunk.js.map": "/election-night-reporting/static/js/2.1941d9d2.chunk.js.map",
     "index.html": "/election-night-reporting/index.html",
-    "precache-manifest.7c87c45200188d84905773183ec4aa57.js": "/election-night-reporting/precache-manifest.7c87c45200188d84905773183ec4aa57.js",
+    "precache-manifest.f75d4629a45fdc918e17142e81e09173.js": "/election-night-reporting/precache-manifest.f75d4629a45fdc918e17142e81e09173.js",
     "service-worker.js": "/election-night-reporting/service-worker.js",
-    "static/css/main.c3fd3b39.chunk.css.map": "/election-night-reporting/static/css/main.c3fd3b39.chunk.css.map",
-    "static/js/2.89cc103b.chunk.js.LICENSE.txt": "/election-night-reporting/static/js/2.89cc103b.chunk.js.LICENSE.txt"
+    "static/css/main.f80ef040.chunk.css.map": "/election-night-reporting/static/css/main.f80ef040.chunk.css.map",
+    "static/js/2.1941d9d2.chunk.js.LICENSE.txt": "/election-night-reporting/static/js/2.1941d9d2.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.312e0acf.js",
-    "static/js/2.89cc103b.chunk.js",
-    "static/css/main.c3fd3b39.chunk.css",
-    "static/js/main.20eda6ca.chunk.js"
+    "static/js/2.1941d9d2.chunk.js",
+    "static/css/main.f80ef040.chunk.css",
+    "static/js/main.32d13149.chunk.js"
   ]
 }
