@@ -13,7 +13,7 @@ pluralize.addSingularRule('localities', 'locality')
 
 const Screen = styled.div``
 const Nav = styled.nav`
-  position: absolute;
+  position: fixed;
   z-index: 100;
   top: 0;
   right: 0;
@@ -39,10 +39,11 @@ const Masthead = styled.div`
   }
 `
 const Title = styled.h1`
-  flex: 1;
+  flex-grow: 1;
   margin: 0;
 `
 const LastUpdated = styled.div`
+  flex-shrink: 3;
   margin-top: 0.25em;
   font-size: 0.8rem;
   @media (min-width: 767px) {
