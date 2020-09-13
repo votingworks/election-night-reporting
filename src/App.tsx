@@ -128,6 +128,11 @@ const localityColors = report.localities.reduce<Dictionary<string>>(
   {}
 )
 
+const sortOptions = {
+  ignorePunctuation: true,
+  numeric: true,
+}
+
 interface Locality {
   id: string
   name: string
@@ -152,7 +157,10 @@ const App: React.FunctionComponent = () => {
       ballotsExpected: 0,
     }
   )
-  const displayLocalities = [reportTotal, ...report.localities]
+  const localitiesByName = report.localities.sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, sortOptions)
+  )
+  const displayLocalities = [reportTotal, ...localitiesByName]
   const filteredLocalities = displayLocalities.filter((locality) =>
     locality.name.match(new RegExp(filter, 'gi'))
   )
