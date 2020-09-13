@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import pluralize from 'pluralize'
@@ -8,11 +9,12 @@ import { localeDate, localeLongDateAndTime } from './utils/IntlDateTimeFormats'
 import report from './data/virgina-report.json'
 import { Dictionary } from './types'
 import shuffle from './utils/shuffle'
+import MapboxGLMap from './components/map'
 
 pluralize.addSingularRule('localities', 'locality')
 
 const Screen = styled.div``
-const Nav = styled.nav`
+const Navivation = styled.div`
   position: fixed;
   z-index: 100;
   top: 0;
@@ -25,9 +27,12 @@ const Nav = styled.nav`
     padding: 1rem;
   }
 `
-const Main = styled.main<{ navigationHeight: number }>`
+const Main = styled.main<{ navigationHeight: number; isMap: boolean }>`
   padding-top: ${({ navigationHeight }) =>
     navigationHeight ? `${navigationHeight}px` : '150px'};
+`
+const MainChild = styled.div`
+  padding: 1rem;
 `
 const Masthead = styled.div`
   display: flex;
@@ -140,10 +145,13 @@ interface Locality {
   ballotsExpected: number
 }
 
+type SitePages = 'list' | 'map' | 'about'
+
 const App: React.FunctionComponent = () => {
   const windowWidth = useWindowWidth()
   const [navigationHeight, setNavigationHeight] = useState<number>(0)
-  const [filter, setFilter] = useState('')
+  const [currentPage, setCurrentPage] = useState<SitePages>('list')
+  const [localityFilter, setLocalityFilter] = useState('')
   const reportTotal = report.localities.reduce<Locality>(
     (result, locality) => ({
       ...result,
@@ -162,7 +170,7 @@ const App: React.FunctionComponent = () => {
   )
   const displayLocalities = [reportTotal, ...localitiesByName]
   const filteredLocalities = displayLocalities.filter((locality) =>
-    locality.name.match(new RegExp(filter, 'gi'))
+    locality.name.match(new RegExp(localityFilter, 'gi'))
   )
   const electionDate = localeDate.format(new Date(report.election.date))
   const lastUpdated = localeLongDateAndTime.format(new Date(report.lastUpdated))
@@ -171,76 +179,105 @@ const App: React.FunctionComponent = () => {
     setNavigationHeight(
       document.getElementById('navigation')?.getBoundingClientRect().height ?? 0
     )
-  }, [windowWidth])
+  }, [windowWidth, localityFilter, currentPage])
 
   return (
     <Screen>
-      <Nav id="navigation">
+      <Navivation id="navigation">
         <Masthead>
           <Title>{report.name}</Title>
           <LastUpdated>Last updated: {lastUpdated}</LastUpdated>
         </Masthead>
-        <SearchBar>
-          {filter ? (
-            <SearchSummary>
-              Showing {pluralize('locality', filteredLocalities.length, true)}{' '}
-              matching “{filter}” for {electionDate} {report.election.name}
-            </SearchSummary>
-          ) : (
-            <SearchSummary>
-              Showing all{' '}
-              {pluralize('locality', filteredLocalities.length, true)} for{' '}
-              {electionDate} {report.election.name}
-            </SearchSummary>
-          )}
-          <SearchInput
-            type="text"
-            placeholder="search by name"
-            maxLength={30}
-            onChange={(event) => setFilter(event.currentTarget.value)}
-          />
-        </SearchBar>
-      </Nav>
-      <Main navigationHeight={navigationHeight}>
-        {filteredLocalities.map((locality) => {
-          const percentComplete =
-            (locality.ballotsCounted / locality.ballotsExpected) * 100
-
-          return (
-            <LocalitySummary
-              key={locality.id}
-              isTotal={locality.id === 'total'}
-            >
-              <p>
-                <LocalityName>{locality.name}</LocalityName> has counted{' '}
-                {locality.ballotsCounted.toLocaleString('en')} of{' '}
-                {locality.ballotsExpected.toLocaleString('en')} expected ballots
-                {locality.id === 'total' && <strong> in total</strong>}.
-              </p>
-              <CompletedBar>
-                <div>
-                  {percentComplete === 0
-                    ? '0%'
-                    : `${percentComplete.toFixed(2)}%`}
-                </div>
-                <div
-                  style={{
-                    width: `${percentComplete}%`,
-                    backgroundColor: localityColors[locality.id],
-                    visibility:
-                      locality.ballotsCounted === 0 ? 'hidden' : undefined,
-                  }}
-                >
-                  {`${percentComplete.toFixed(2)}%`}
-                </div>
-              </CompletedBar>
-            </LocalitySummary>
-          )
-        })}
-        {filteredLocalities.length === 0 && (
-          <button type="button" onClick={() => setFilter('')}>
-            Show all
+        <nav>
+          <button type="button" onClick={() => setCurrentPage('list')}>
+            list
           </button>
+          <button type="button" onClick={() => setCurrentPage('map')}>
+            map
+          </button>
+          <button type="button" onClick={() => setCurrentPage('about')}>
+            about
+          </button>
+        </nav>
+        {currentPage === 'list' && (
+          <SearchBar>
+            {localityFilter ? (
+              <SearchSummary>
+                Showing {pluralize('locality', filteredLocalities.length, true)}{' '}
+                matching “{localityFilter}” for {electionDate}{' '}
+                {report.election.name}
+              </SearchSummary>
+            ) : (
+              <SearchSummary>
+                Showing all{' '}
+                {pluralize('locality', filteredLocalities.length, true)} for{' '}
+                {electionDate} {report.election.name}
+              </SearchSummary>
+            )}
+            <SearchInput
+              type="text"
+              placeholder="search by name"
+              maxLength={30}
+              onChange={(event) => setLocalityFilter(event.currentTarget.value)}
+            />
+          </SearchBar>
+        )}
+      </Navivation>
+      <Main navigationHeight={navigationHeight} isMap={currentPage === 'map'}>
+        {currentPage === 'about' ? (
+          <MainChild>
+            <h1>About This App</h1>
+            <p>What does it all mean?</p>
+            <p>Where is my spoon?</p>
+          </MainChild>
+        ) : currentPage === 'map' ? (
+          <div>
+            <MapboxGLMap />
+          </div>
+        ) : (
+          <>
+            {filteredLocalities.map((locality) => {
+              const percentComplete =
+                (locality.ballotsCounted / locality.ballotsExpected) * 100
+
+              return (
+                <LocalitySummary
+                  key={locality.id}
+                  isTotal={locality.id === 'total'}
+                >
+                  <p>
+                    <LocalityName>{locality.name}</LocalityName> has counted{' '}
+                    {locality.ballotsCounted.toLocaleString('en')} of{' '}
+                    {locality.ballotsExpected.toLocaleString('en')} expected
+                    ballots
+                    {locality.id === 'total' && <strong> in total</strong>}.
+                  </p>
+                  <CompletedBar>
+                    <div>
+                      {percentComplete === 0
+                        ? '0%'
+                        : `${percentComplete.toFixed(2)}%`}
+                    </div>
+                    <div
+                      style={{
+                        width: `${percentComplete}%`,
+                        backgroundColor: localityColors[locality.id],
+                        visibility:
+                          locality.ballotsCounted === 0 ? 'hidden' : undefined,
+                      }}
+                    >
+                      {`${percentComplete.toFixed(2)}%`}
+                    </div>
+                  </CompletedBar>
+                </LocalitySummary>
+              )
+            })}
+            {filteredLocalities.length === 0 && (
+              <button type="button" onClick={() => setLocalityFilter('')}>
+                Show all
+              </button>
+            )}
+          </>
         )}
       </Main>
     </Screen>
