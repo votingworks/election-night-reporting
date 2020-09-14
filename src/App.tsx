@@ -20,12 +20,7 @@ const Navivation = styled.div`
   top: 0;
   right: 0;
   left: 0;
-  padding: 0.5rem;
   background: #3e4e6d;
-  color: #ffffff;
-  @media (min-width: 767px) {
-    padding: 1rem;
-  }
 `
 const Main = styled.main<{ navigationHeight: number; isMap: boolean }>`
   padding-top: ${({ navigationHeight }) =>
@@ -37,10 +32,48 @@ const MainChild = styled.div`
 const Masthead = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
+  padding: 0.5rem;
+  color: #ffffff;
   @media (min-width: 767px) {
     flex-direction: row;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+`
+const TabNav = styled.nav`
+  display: flex;
+  padding: 0 0.5rem;
+  border-bottom: 1px solid #ffffff;
+  @media (min-width: 767px) {
+    flex-direction: row;
+    padding: 0 1rem;
+  }
+  button {
+    display: inline-block;
+    min-width: 7rem;
+    box-sizing: border-box;
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    margin: 0 0.25rem;
+    background: #8798ba;
+    border-radius: 0.25rem 0.25rem 0 0;
+    font-size: inherit;
+    &:first-child {
+      margin-left: 0;
+    }
+    &:last-child {
+      margin-right: 0;
+    }
+    &.active {
+      background: #ffffff;
+    }
+    @media (min-width: 767px) {
+      flex: 0;
+      margin: 0 0.25rem;
+    }
   }
 `
 const Title = styled.h1`
@@ -59,9 +92,13 @@ const SearchBar = styled.label`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid #cccccc;
+  background: #ffffff;
   @media (min-width: 767px) {
     flex-direction: row;
     align-items: center;
+    padding: 0.25rem 1rem;
   }
 `
 const SearchSummary = styled.div`
@@ -74,6 +111,11 @@ const SearchSummary = styled.div`
 const SearchInput = styled.input`
   width: 100%;
   padding: 0.25rem;
+  border: 1px solid #cccccc;
+  border-radius: 0.25rem;
+  &::placeholder {
+    color: #cccccc;
+  }
   @media (min-width: 767px) {
     width: 15em;
   }
@@ -188,17 +230,29 @@ const App: React.FunctionComponent = () => {
           <Title>{report.name}</Title>
           <LastUpdated>Last updated: {lastUpdated}</LastUpdated>
         </Masthead>
-        <nav>
-          <button type="button" onClick={() => setCurrentPage('list')}>
-            list
+        <TabNav>
+          <button
+            type="button"
+            className={currentPage === 'list' ? 'active' : ''}
+            onClick={() => setCurrentPage('list')}
+          >
+            List
           </button>
-          <button type="button" onClick={() => setCurrentPage('map')}>
-            map
+          <button
+            type="button"
+            className={currentPage === 'map' ? 'active' : ''}
+            onClick={() => setCurrentPage('map')}
+          >
+            Map
           </button>
-          <button type="button" onClick={() => setCurrentPage('about')}>
-            about
+          <button
+            type="button"
+            className={currentPage === 'about' ? 'active' : ''}
+            onClick={() => setCurrentPage('about')}
+          >
+            About
           </button>
-        </nav>
+        </TabNav>
         {currentPage === 'list' && (
           <SearchBar>
             {localityFilter ? (
