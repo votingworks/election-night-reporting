@@ -1,3 +1,14 @@
+@import '../node_modules/normalize.css';
+@import '../node_modules/@blueprintjs/core/lib/css/blueprint.css';
+@import '../node_modules/@blueprintjs/icons/lib/css/blueprint-icons.css';
+@import '../node_modules/@blueprintjs/table/lib/css/table.css';
+
+@font-face {
+  font-family: 'ProximaNova-Condensed-Regular';
+  src: local('ProximaNova-Condensed-Regular'),
+    url('./fonts/Proxima-Nova-Condensed-Regular.otf') format('opentype');
+}
+
 /* Allow selectors to be used multiple times in this file for grouping of concerns. */
 /* stylelint-disable no-duplicate-selectors */
 
@@ -46,8 +57,8 @@ img {
 }
 
 :focus {
-  /* outline: rgb(77, 144, 254) dashed 0.25rem; */
-  outline: none;
+  outline: rgb(77, 144, 254) dashed 0.25rem;
+  /* outline: none; */
 }
 
 /* Foundational */

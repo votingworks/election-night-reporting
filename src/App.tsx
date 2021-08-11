@@ -3,6 +3,13 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import pluralize from 'pluralize'
 import { useWindowWidth } from '@react-hook/window-size'
+import {
+  BrowserRouter as Router,
+  Route,
+  RouteProps,
+  Switch,
+  Redirect,
+} from 'react-router-dom'
 
 import { localeDate, localeLongDateAndTime } from './utils/IntlDateTimeFormats'
 
@@ -10,6 +17,7 @@ import report from './data/virgina-report.json'
 import { Dictionary } from './types'
 import shuffle from './utils/shuffle'
 import MapboxGLMap from './components/map'
+import ElectionScreen from './components/ElectionScreen'
 
 pluralize.addSingularRule('localities', 'locality')
 
@@ -224,117 +232,124 @@ const App: React.FunctionComponent = () => {
   }, [windowWidth, localityFilter, currentPage])
 
   return (
-    <Screen>
-      <Navivation id="navigation">
-        <Masthead>
-          <Title>{report.name}</Title>
-          <LastUpdated>Last updated: {lastUpdated}</LastUpdated>
-        </Masthead>
-        <TabNav>
-          <button
-            type="button"
-            className={currentPage === 'list' ? 'active' : ''}
-            onClick={() => setCurrentPage('list')}
-          >
-            List
-          </button>
-          <button
-            type="button"
-            className={currentPage === 'map' ? 'active' : ''}
-            onClick={() => setCurrentPage('map')}
-          >
-            Map
-          </button>
-          <button
-            type="button"
-            className={currentPage === 'about' ? 'active' : ''}
-            onClick={() => setCurrentPage('about')}
-          >
-            About
-          </button>
-        </TabNav>
-        {currentPage === 'list' && (
-          <SearchBar>
-            {localityFilter ? (
-              <SearchSummary>
-                Showing {pluralize('locality', filteredLocalities.length, true)}{' '}
-                matching “{localityFilter}” for {electionDate}{' '}
-                {report.election.name}
-              </SearchSummary>
-            ) : (
-              <SearchSummary>
-                Showing all{' '}
-                {pluralize('locality', filteredLocalities.length, true)} for{' '}
-                {electionDate} {report.election.name}
-              </SearchSummary>
-            )}
-            <SearchInput
-              type="text"
-              placeholder="search by name"
-              maxLength={30}
-              onChange={(event) => setLocalityFilter(event.currentTarget.value)}
-            />
-          </SearchBar>
-        )}
-      </Navivation>
-      <Main navigationHeight={navigationHeight} isMap={currentPage === 'map'}>
-        {currentPage === 'about' ? (
-          <MainChild>
-            <h1>About This App</h1>
-            <p>What does it all mean?</p>
-            <p>Where is my spoon?</p>
-          </MainChild>
-        ) : currentPage === 'map' ? (
-          <div>
-            <MapboxGLMap />
-          </div>
-        ) : (
-          <>
-            {filteredLocalities.map((locality) => {
-              const percentComplete =
-                (locality.ballotsCounted / locality.ballotsExpected) * 100
-
-              return (
-                <LocalitySummary
-                  key={locality.id}
-                  isTotal={locality.id === 'total'}
+    <Router>
+      <Switch>
+        <Route exact path="/election-night-reporting">
+          <Screen>
+            <Navivation id="navigation">
+              <Masthead>
+                <Title>{report.name}</Title>
+                <LastUpdated>Last updated: {lastUpdated}</LastUpdated>
+              </Masthead>
+              <TabNav>
+                <button
+                  type="button"
+                  className={currentPage === 'list' ? 'active' : ''}
+                  onClick={() => setCurrentPage('list')}
                 >
-                  <p>
-                    <LocalityName>{locality.name}</LocalityName> has counted{' '}
-                    {locality.ballotsCounted.toLocaleString('en')} of{' '}
-                    {locality.ballotsExpected.toLocaleString('en')} expected
-                    ballots
-                    {locality.id === 'total' && <strong> in total</strong>}.
-                  </p>
-                  <CompletedBar>
-                    <div>
-                      {percentComplete === 0
-                        ? '0%'
-                        : `${percentComplete.toFixed(2)}%`}
-                    </div>
-                    <div
-                      style={{
-                        width: `${percentComplete}%`,
-                        backgroundColor: localityColors[locality.id],
-                        visibility:
-                          locality.ballotsCounted === 0 ? 'hidden' : undefined,
-                      }}
-                    >
-                      {`${percentComplete.toFixed(2)}%`}
-                    </div>
-                  </CompletedBar>
-                </LocalitySummary>
-              )
-            })}
-            {filteredLocalities.length === 0 && (
-              <button type="button" onClick={() => setLocalityFilter('')}>
-                Show all
-              </button>
-            )}
-          </>
-        )}
-      </Main>
-    </Screen>
+                  List
+                </button>
+                <button
+                  type="button"
+                  className={currentPage === 'map' ? 'active' : ''}
+                  onClick={() => setCurrentPage('map')}
+                >
+                  Map
+                </button>
+                <button
+                  type="button"
+                  className={currentPage === 'about' ? 'active' : ''}
+                  onClick={() => setCurrentPage('about')}
+                >
+                  About
+                </button>
+              </TabNav>
+              {currentPage === 'list' && (
+                <SearchBar>
+                  {localityFilter ? (
+                    <SearchSummary>
+                      Showing {pluralize('locality', filteredLocalities.length, true)}{' '}
+                      matching “{localityFilter}” for {electionDate}{' '}
+                      {report.election.name}
+                    </SearchSummary>
+                  ) : (
+                    <SearchSummary>
+                      Showing all{' '}
+                      {pluralize('locality', filteredLocalities.length, true)} for{' '}
+                      {electionDate} {report.election.name}
+                    </SearchSummary>
+                  )}
+                  <SearchInput
+                    type="text"
+                    placeholder="search by name"
+                    maxLength={30}
+                    onChange={(event) => setLocalityFilter(event.currentTarget.value)}
+                  />
+                </SearchBar>
+              )}
+            </Navivation>
+            <Main navigationHeight={navigationHeight} isMap={currentPage === 'map'}>
+              {currentPage === 'about' ? (
+                <MainChild>
+                  <h1>About This App</h1>
+                  <p>What does it all mean?</p>
+                  <p>Where is my spoon?</p>
+                </MainChild>
+              ) : currentPage === 'map' ? (
+                <div>
+                  <MapboxGLMap />
+                </div>
+              ) : (
+                <>
+                  {filteredLocalities.map((locality) => {
+                    const percentComplete =
+                      (locality.ballotsCounted / locality.ballotsExpected) * 100
+
+                    return (
+                      <LocalitySummary
+                        key={locality.id}
+                        isTotal={locality.id === 'total'}
+                      >
+                        <p>
+                          <LocalityName>{locality.name}</LocalityName> has counted{' '}
+                          {locality.ballotsCounted.toLocaleString('en')} of{' '}
+                          {locality.ballotsExpected.toLocaleString('en')} expected
+                          ballots
+                          {locality.id === 'total' && <strong> in total</strong>}.
+                        </p>
+                        <CompletedBar>
+                          <div>
+                            {percentComplete === 0
+                              ? '0%'
+                              : `${percentComplete.toFixed(2)}%`}
+                          </div>
+                          <div
+                            style={{
+                              width: `${percentComplete}%`,
+                              backgroundColor: localityColors[locality.id],
+                              visibility:
+                                locality.ballotsCounted === 0 ? 'hidden' : undefined,
+                            }}
+                          >
+                            {`${percentComplete.toFixed(2)}%`}
+                          </div>
+                        </CompletedBar>
+                      </LocalitySummary>
+                    )
+                  })}
+                  {filteredLocalities.length === 0 && (
+                    <button type="button" onClick={() => setLocalityFilter('')}>
+                      Show all
+                    </button>
+                  )}
+                </>
+              )}
+            </Main>
+          </Screen>
+        </Route>
+        <Route path="/election" component={ElectionScreen} />
+      </Switch>
+    </Router>
   )
 }
 
